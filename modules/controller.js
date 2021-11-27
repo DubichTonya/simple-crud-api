@@ -15,7 +15,7 @@ function getById(req, res, id) {
   }
 
   try {
-    let value = getValueById(id);
+    let value = getValueById(data, id);
     setResponse(res, 200, value);
   } catch (e) {
     e.name === 'DataError' ? setResponse(res, 404, errorMessage.notFoundId) : setResponse(res, 500, errorMessage.server);
@@ -24,25 +24,22 @@ function getById(req, res, id) {
 
 function createPerson(req, res) {
   let body = '';
-  let isValid = false;
   req.on('data', (chunk) => {
     body += chunk;
   });
 
   req.on('end', () => {
-    body ? body = JSON.parse(body) : setResponse(res, 400, errorMessage.invalidBody);
-    isValid = validator(body);
-
-    if(!isValid) {
+    body ? body = JSON.parse(body) : {};
+    if(!validator(body)){
       setResponse(res, 400, errorMessage.invalidBody);
-    }
-
-    try {
-      body = {id: uuid.v4(), ...body};
-      addData(data, body);
-      setResponse(res, 200, body);
-    } catch (e) {
-      setResponse(res, 500, errorMessage.server);
+    } else {
+      try {
+        body = {id: uuid.v4(), ...body};
+        addData(data, body);
+        setResponse(res, 200, body);
+      } catch (e) {
+        e.name === 'DataError' ? setResponse(res, 400, errorMessage.notFoundId) : setResponse(res, 500, errorMessage.server);
+      }
     }
   });
 }
@@ -67,8 +64,8 @@ function updatePerson(req, res, id) {
     }
 
     try {
-      updateData(data, id, body);
-      setResponse(res, 200, body);
+      updateData(data, id, JSON.parse(body));
+      setResponse(res, 200, getValueById(data, id));
     } catch (e) {
       e.name === 'DataError' ? setResponse(res, 400, errorMessage.notFoundId) : setResponse(res, 500, errorMessage.server);
     }
@@ -82,7 +79,7 @@ function deletePerson(req, res, id) {
 
   try {
     deleteFromData(data, id);
-    setResponse(res, 204, data);
+    setResponse(res, 204, '');
   } catch (e) {
     e.name === 'DataError' ? setResponse(res, 404, errorMessage.notFoundId) : setResponse(res, 500, errorMessage.server);
   }

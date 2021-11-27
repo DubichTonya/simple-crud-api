@@ -16,7 +16,7 @@ module.exports = {
       throw new DataError('Not found');
     }
 
-    delete data[index];
+    data.splice(data[index], 1);
   },
 
   updateData(data, id, value) {
@@ -24,7 +24,7 @@ module.exports = {
     if (index === -1) {
       throw new DataError('Not found');
     }
-    data[index] = value;
+    data[index] = {id, ...value};
   },
 
   getValueById(data, id){

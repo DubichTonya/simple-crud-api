@@ -6,7 +6,6 @@ const {getAll, getById, createPerson, updatePerson, deletePerson, notFoundUrl} =
 
 http.createServer((req, res) => {
   const data = getUrlData(req);
-  let message;
 
   if(data){
     switch (data.status) {
