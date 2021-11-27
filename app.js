@@ -1,47 +1,37 @@
 require('dotenv').config();
 const http = require('http');
 const port = process.env.PORT || 5000;
-const db = require('./db/db.json');
 const getUrlData = require('./modules/getUrlData');
-
-
-// statusCode: устанавливает статусный код ответа
-// statusMessage: устанавливает сообщение, отправляемое вместе со статусным кодом
-// setHeader(name, value): добавляет в ответ один заголовок
-// write: пишет в поток ответа некоторое содержимое
-// writeHead: добавляет в ответ статусный код и набор заголовков
-// end: сигнализирует серверу, что заголовки и тело ответа установлены, в итоге ответ отсылается клиента. Данный метод
-// должен вызываться в каждом запросе.
+const {getAll, getById, createPerson, updatePerson, deletePerson, notFoundUrl} = require('./modules/controller');
 
 http.createServer((req, res) => {
-    const data = getUrlData(req);
-    let message;
-    console.log(data);
-    if(data){
-        switch (data.status) {
-            case 'setPerson':
-                message = 'setPerson';
-                break;
-            case 'getAllPerson':
-                message = 'getAllPerson';
-                break;
-            case 'getPersonById':
-                message = 'getPersonById';
-                break;
-            case 'updatePersonById':
-                message = 'updatePersonById';
-                break;
-            case 'deletePersonById':
-                message = 'deletePersonById';
-                break;
-            default:
-                message = 'Error'
-        }
+  const data = getUrlData(req);
+  let message;
 
-    } else {
-       res.statusCode = 404;
-       res.end('Страница не найдена');
+  if(data){
+    switch (data.status) {
+      case 'setPerson':
+        createPerson(req, res)
+        break;
+      case 'getAllPerson':
+        getAll(req, res)
+        break;
+      case 'getPersonById':
+        getById(req, res, data.id)
+        break;
+      case 'updatePersonById':
+        updatePerson(req, res, data.id);
+        break;
+      case 'deletePersonById':
+        deletePerson(req, res, data.id)
+        break;
+      default:
+        notFoundUrl(req, res);
+        break;
     }
+  } else {
+    notFoundUrl(req, res)
+  }
 
 }).listen(port);
 
