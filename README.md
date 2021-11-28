@@ -25,3 +25,7 @@
 > * `name` — person's name (`string`, **required**)
 > * `age` — person's age (`number`, **required**)
 > * `hobbies` — person's hobbies (`array` of `strings` or empty `array`, **required**)
+
+> ### Run tests:
+> 1. `npm run start:dev`
+> 2. `npm run test`

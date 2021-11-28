@@ -4,8 +4,6 @@ function validator(obj) {
     map.set(key, value);
   });
 
-  console.log(obj);
-
   return map.size === 3 &&
     map.has('name') && typeof map.get('name') === 'string' &&
     map.has('age') && typeof map.get('age') === 'number' &&
